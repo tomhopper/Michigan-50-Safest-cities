@@ -29,3 +29,4 @@ v 1.2: Added summary of correlation and r-squared between variables selected on 
 
 * Provide human-readable axis labels for comparison graph and for inputSelect() boxes.
 * Change comparisons graph to ggvis and add tooltip for city, x and y variable.
+* Catch error condition on relationship graph when x or y variable is not numeric.
