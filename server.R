@@ -185,11 +185,23 @@ shinyServer(function(input, output) {
     plotOutput(outputId = "citiesPlot", height = plot_height(), width = "90%")
   })
   
+  tooltip_label <- reactive({
+    function(x) {
+      if(is.null(x)) return(NULL)
+      else return(paste0(x$city, ": </br>x:", x$x, "</br>y: ", x$y))
+    }
+  })
+  
+  rel_plot_df <- reactive({
+      df <- cities_df %>% 
+        filter(Population >= input$min_pop_rel) %>% 
+        mutate_(x = input$xy_var_x, y = input$xy_var_y)
+  })
+  
   output$relPlot <- renderPlot({
-    cities_df %>% 
-      filter(Population >= input$min_pop_rel) %>% 
-      mutate_(x = input$xy_var_x, y = input$xy_var_y) %>% 
+    rel_plot_df() %>% 
       ggplot(aes(x = x, y = y)) +
+      #geom_smooth(method = "lm") +
       geom_point() +
       ylab(input$xy_var_y) +
       xlab(input$xy_var_x) +
@@ -198,14 +210,46 @@ shinyServer(function(input, output) {
             axis.title.x = element_text(size = rel(4)),
             axis.title.y = element_text(size = rel(4)))
   })
+  # cities_plot_df <- reactive({
+  #   df <- cities_df %>% 
+  #     filter(Population >= input$min_pop_rel) %>% 
+  #     mutate_(x = input$xy_var_x, y = input$xy_var_y)
+  # }) 
+  # ggvis(cities_plot_df, ~x, ~y) %>% 
+  #   layer_points() %>% 
+  #   add_tooltip(html = tooltip_label()) %>% 
+  #   bind_shiny("relPlot")
+  # output$relPlot_ui <- renderUI({
+  #   ggvisOutput("relPlot")
+  # })
   
-
+  output$correlation_text <- renderText({
+    rel_cor <- cor(rel_plot_df()$x, rel_plot_df()$y)
+    rel_lm <- lm(data = rel_plot_df(), y ~ x)
+    rel_rsq <- summary(rel_lm)$r.squared
+    HTML(paste0("For every change of 1 in ", input$xy_var_x,", ", input$xy_var_y," changes by ", format(rel_cor, digits = 2), ".</br>", input$xy_var_x ," explains at most ", round(rel_rsq * 100, 0), "% of the variation in ", input$xy_var_y,"."))
+  })
+  
+  output$relVarXui <- renderUI({
+    selectInput(inputId = "xy_var_x",
+                label = "Variable to plot horizontally (x axis):",
+                choices = colnames(cities_df),
+                selected = colnames(cities_df[2]))
+  })
+  
+  output$relVarYui <- renderUI({
+    selectInput(inputId = "xy_var_y",
+                label = "Variable to plot vertically (y axis):",
+                choices = colnames(cities_df),
+                selected = colnames(cities_df[3]))
+    
+  })
   
   # Set up explanatory notes
   output$noteGraph <- renderText({
-    HTML("<div style = \"font-size: smaller\">Light gray bars indicate the range of the \"true\" crime rate.<br/>Where dots of one city overlap with bars of another city, the crime rates of the two cities are not meaningfully different.</div>")
+    HTML("<div style = \"font-size: smaller\">Light gray bars indicate the range within which the \"true\" crime rate falls.<br/>Where dots of one city overlap with bars of another city, the crime rates of the two cities are not meaningfully different.</div>")
   })
   output$noteData <- renderText({
-    HTML("<div style = \"font-size: smaller\">Data from FBI Uniform Crime Report \"2014 Crime in the United States.\"</div>")
+    HTML("<div style = \"font-size: smaller\"></br></br>Data from FBI Uniform Crime Report <em>2014 Crime in the United States.</em></div>")
   })
 })

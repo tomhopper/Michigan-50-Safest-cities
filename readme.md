@@ -21,8 +21,11 @@ v 1.0: Deployed as Shiny app with comparisons graphs. Code cleaned up to put all
 
 v 1.0.1: Added this readme file.
 
+v 1.1: Made comparisons graph input selection dynamic based on data frame column names.
+
+v 1.2: Added summary of correlation and r-squared between variables selected on x-y releationship graph.
+
 ## To Do
 
-* Change comparisons graph variable selection inputs to dynamically update from data frame column names.
-  * Create inputSelect() in server.R; display with outputUI() in ui.R.
 * Provide human-readable axis labels for comparison graph and for inputSelect() boxes.
+* Change comparisons graph to ggvis and add tooltip for city, x and y variable.

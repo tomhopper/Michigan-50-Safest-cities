@@ -69,21 +69,25 @@ shinyUI(fluidPage(theme = shinytheme("spacelab"),
                                               max = NA,
                                               value = 10000,
                                               step = 1),
-                                 selectInput(inputId = "xy_var_x",
-                                             label = "Variable to plot horizontally (x axis):",
-                                             choices = c("City", "Population", "violent_crime_rate", "violent_rate_lower", "violent_rate_upper",
-                                                         "property_crime_rate", "property_rate_lower", "property_rate_upper",
-                                                         "murder_rate", "robbery_rate", "assault_rate", "burglary_rate", "auto_theft_rate", "arson_rate"),
-                                             selected = "Population"),
-                                 selectInput(inputId = "xy_var_y",
-                                             label = "Variable to plot vertically (y axis):",
-                                             choices = c("City", "Population", "violent_crime_rate", "violent_rate_lower", "violent_rate_upper",
-                                                         "property_crime_rate", "property_rate_lower", "property_rate_upper",
-                                                         "murder_rate", "robbery_rate", "assault_rate", "burglary_rate", "auto_theft_rate", "arson_rate"),
-                                             selected = "violent_crime_rate")
+                                 # selectInput(inputId = "xy_var_x",
+                                 #             label = "Variable to plot horizontally (x axis):",
+                                 #             choices = c("City", "Population", "violent_crime_rate", "violent_rate_lower", "violent_rate_upper",
+                                 #                         "property_crime_rate", "property_rate_lower", "property_rate_upper",
+                                 #                         "murder_rate", "robbery_rate", "assault_rate", "burglary_rate", "auto_theft_rate", "arson_rate"),
+                                 #             selected = "Population"),
+                                 # selectInput(inputId = "xy_var_y",
+                                 #             label = "Variable to plot vertically (y axis):",
+                                 #             choices = c("City", "Population", "violent_crime_rate", "violent_rate_lower", "violent_rate_upper",
+                                 #                         "property_crime_rate", "property_rate_lower", "property_rate_upper",
+                                 #                         "murder_rate", "robbery_rate", "assault_rate", "burglary_rate", "auto_theft_rate", "arson_rate"),
+                                 #             selected = "violent_crime_rate")
+                                 uiOutput("relVarXui"),
+                                 uiOutput("relVarYui")
                                ),
                                mainPanel(
-                                 plotOutput("relPlot")
+                                 plotOutput("relPlot"),
+                                 # htmlOutput("relPlot_ui")
+                                 htmlOutput("correlation_text")
                                )
                              )
                     )
