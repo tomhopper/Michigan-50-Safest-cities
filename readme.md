@@ -11,6 +11,8 @@ Building on backgroundcheck.org's article [50 Safest Cities in Michigan 2016](ht
 * A table allowing exploration of all the data;
 * An explorable comparisons graph allowing plotting of any one variable against any other variable.
 
+[Live demo at shinyapps.io](http://tomhopper.shinyapps.io/MI_50_Safest_cities)
+
 ## Version History
 
 v 0.1: Sortable graphs built as static, local display.
@@ -25,8 +27,12 @@ v 1.1: Made comparisons graph input selection dynamic based on data frame column
 
 v 1.2: Added summary of correlation and r-squared between variables selected on x-y releationship graph.
 
+v 1.2.1: Fixed "relationships" tab text summary of correlation when one selected variable is character.
+
+v 1.3: Added a linear least squares fit to the "relationships" graph when both variables are numeric.
+
 ## To Do
 
 * Provide human-readable axis labels for comparison graph and for inputSelect() boxes.
 * Change comparisons graph to ggvis and add tooltip for city, x and y variable.
-* Catch error condition on relationship graph when x or y variable is not numeric.
+

@@ -6,7 +6,7 @@
 #
 
 library(shiny)
-#library(rvest)
+library(rvest)
 library(readxl)
 library(PropCIs)
 library(dplyr)
@@ -98,6 +98,8 @@ shinyServer(function(input, output) {
       #select(City, Population, crime_rank, violent_crime_rate, property_crime_rate, violent_crimes = Violent.crime, property_crimes = Property.crime) %>% 
       arrange(crime_rank)
   })
+  
+  # create the plot
   output$citiesPlot <- renderPlot({
     if(input$crime_var == "Violent Crime Rate") {
       # User wants to plot violent crime rate
@@ -193,13 +195,13 @@ shinyServer(function(input, output) {
   })
   
   rel_plot_df <- reactive({
-      df <- cities_df %>% 
-        filter(Population >= input$min_pop_rel) %>% 
-        mutate_(x = input$xy_var_x, y = input$xy_var_y)
+    df <- cities_df %>% 
+      filter(Population >= input$min_pop_rel) %>% 
+      mutate_(x = input$xy_var_x, y = input$xy_var_y)
   })
   
   output$relPlot <- renderPlot({
-    rel_plot_df() %>% 
+    rel_p <- rel_plot_df() %>% 
       ggplot(aes(x = x, y = y)) +
       #geom_smooth(method = "lm") +
       geom_point() +
@@ -209,6 +211,10 @@ shinyServer(function(input, output) {
       theme(text = element_text(size = rel(5)),
             axis.title.x = element_text(size = rel(4)),
             axis.title.y = element_text(size = rel(4)))
+    if(is.numeric(rel_plot_df()$x) & is.numeric(rel_plot_df()$y)) {
+      rel_p <- rel_p + geom_smooth(method = "lm")
+    }
+    return(rel_p)
   })
   # cities_plot_df <- reactive({
   #   df <- cities_df %>% 
@@ -224,10 +230,15 @@ shinyServer(function(input, output) {
   # })
   
   output$correlation_text <- renderText({
-    rel_cor <- cor(rel_plot_df()$x, rel_plot_df()$y)
-    rel_lm <- lm(data = rel_plot_df(), y ~ x)
-    rel_rsq <- summary(rel_lm)$r.squared
-    HTML(paste0("For every change of 1 in ", input$xy_var_x,", ", input$xy_var_y," changes by ", format(rel_cor, digits = 2), ".</br>", input$xy_var_x ," explains at most ", round(rel_rsq * 100, 0), "% of the variation in ", input$xy_var_y,"."))
+    if(is.numeric(rel_plot_df()$x) && is.numeric(rel_plot_df()$y)){
+      #rel_cor <- cor(rel_plot_df()$x, rel_plot_df()$y)
+      rel_lm <- lm(data = rel_plot_df(), y ~ x)
+      rel_cor <- coef(rel_lm)[[2]]
+      rel_rsq <- summary(rel_lm)$r.squared
+      cor_text <- ifelse(!is.null(rel_cor), paste0("</br>", input$xy_var_x ," explains at most ", round(rel_rsq * 100, 0), "% of the variation in ", input$xy_var_y,".", ""))
+      HTML(paste0("For every increase of 1 in ", input$xy_var_x,", ", input$xy_var_y," increases by about ", format(rel_cor, digits = 2), ".", ifelse(!is.null(cor_text),cor_text," ")))
+    } else
+      HTML("")
   })
   
   output$relVarXui <- renderUI({

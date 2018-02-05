@@ -1,9 +1,10 @@
 name: MI_50_Safest_cities
+title:
 account: tomhopper
 server: shinyapps.io
 appId: 90566
-bundleId: 403830
+bundleId: 629073
 url: https://tomhopper.shinyapps.io/MI_50_Safest_cities/
-when: 1459017367.47195
+when: 1480438539.25962
 asMultiple: FALSE
 asStatic: FALSE
